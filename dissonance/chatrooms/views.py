@@ -57,11 +57,14 @@ def post_message(request: HttpRequest, room_id: int) -> HttpResponse:
 
     if text := request.POST.get("text"):
         message = Message.objects.create(room=room, user=request.user, text=text)
-        _notify(
-            channel=f"room{room.pk}",
-            event="new-message",
-            data=str(message.pk),
+        payload = json.dumps(
+            {
+                "event": "new-message",
+                "data": str(message.pk),
+            },
         )
+        with connection.cursor() as cursor:
+            cursor.execute(f"NOTIFY {room.get_channel_id()}, '{payload}'")
     return render(request, "chatrooms/_message_form.html", {"room": room})
 
 
@@ -88,38 +91,28 @@ async def messages_stream(
 ) -> StreamingHttpResponse:
     room = await Room.objects.filter(pk=room_id).afirst()
 
-    async def _stream_messages() -> AsyncGenerator[str, None]:
-        connection_params = connection.get_connection_params()
-        connection_params.pop("cursor_factory")
-
-        conn = await psycopg.AsyncConnection.connect(
-            **connection_params, autocommit=True
-        )
-
-        async with conn.cursor() as cursor:
-            await cursor.execute(f"LISTEN room{room.pk}")
-            gen = conn.notifies()
-            async for notify_msg in gen:
-                yield _sse_message(**json.loads(notify_msg.payload))
-
     if room:
         return StreamingHttpResponse(
-            streaming_content=_stream_messages(),
+            streaming_content=_stream_messages(room),
             content_type="text/event-stream",
         )
     raise Http404("Room not found")
 
 
-def _sse_message(*, event: str, data: str) -> str:
-    return "\n".join([f"event: {event}", f"data: {data}", "\n"])
+async def _stream_messages(room: Room) -> AsyncGenerator[str, None]:
+    connection_params = connection.get_connection_params()
+    connection_params.pop("cursor_factory")
 
+    conn = await psycopg.AsyncConnection.connect(**connection_params, autocommit=True)
 
-def _notify(*, channel: str, event: str, data: str) -> None:
-    payload = json.dumps(
-        {
-            "event": event,
-            "data": data,
-        },
-    )
-    with connection.cursor() as cursor:
-        cursor.execute(f"NOTIFY {channel}, '{payload}'")
+    async with conn.cursor() as cursor:
+        await cursor.execute(f"LISTEN {room.get_channel_id()}")
+        async for event in conn.notifies():
+            payload = json.loads(event.payload)
+            yield "\n".join(
+                [
+                    f"event: {payload['event']}",
+                    f"data: {payload['data']}",
+                    "\n",
+                ]
+            )

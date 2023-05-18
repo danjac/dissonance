@@ -15,6 +15,9 @@ class Room(models.Model):
     def get_absolute_url(self) -> str:
         return reverse("chatrooms:room_detail", args=[self.pk])
 
+    def get_channel_id(self) -> str:
+        return f"room_{self.pk}"
+
 
 class Message(models.Model):
     room = models.ForeignKey(Room, on_delete=models.PROTECT)
