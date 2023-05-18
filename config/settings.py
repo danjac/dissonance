@@ -33,6 +33,7 @@ INSTALLED_APPS: list[str] = [
     "django.contrib.staticfiles",
     "django.forms",
     "django_htmx",
+    "heroicons",
     "dissonance.chatrooms",
 ]
 
@@ -130,6 +131,8 @@ DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default=f"no-reply@{EMAIL_HOS
 
 # authentication settings
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
+
+LOGIN_REDIRECT_URL = "/"
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",

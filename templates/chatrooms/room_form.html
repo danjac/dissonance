@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1 class="mb-3 pb-3 text-lg font-bold border-b sm:justify-start lg:text-xl xl:text-2xl">
+        {% if room %}
+            Edit Room
+        {% else %}
+            Create Room
+        {% endif %}
+    </h1>
+    {% include "chatrooms/_room_form.html" %}
+{% endblock content %}

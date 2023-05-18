@@ -1,4 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-    index page goes here...
+    <h1 class="mb-3 pb-3 text-lg font-bold border-b sm:justify-start lg:text-xl xl:text-2xl">Rooms</h1>
+    <ul class="space-y-3 divide-y divide-solid mb-6">
+        {% for room in rooms %}
+            <li>
+                <a href="{{ room.get_absolute_url }}"
+                   class="font-bold hover:text-blue-800">{{ room.name }}</a>
+            </li>
+        {% empty %}
+            <li>No rooms have been added yet.</li>
+        {% endfor %}
+    </ul>
+    <h2 class="mb-3 pb-3 text-base font-bold border-b sm:justify-start lg:text-lg xl:text-xl">Add Room</h2>
+    {% url 'chatrooms:create_room' as submit_url %}
+    {% include "chatrooms/_room_form.html" with submit_text="Add Room" %}
 {% endblock content %}

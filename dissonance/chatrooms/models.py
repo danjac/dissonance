@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
 
 
 class Room(models.Model):
@@ -11,8 +12,12 @@ class Room(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    def get_absolute_url(self) -> str:
+        return reverse("chatrooms:room_detail", args=[self.pk])
+
 
 class Message(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.PROTECT)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     text = models.TextField()
     created = models.DateTimeField(auto_now_add=True)

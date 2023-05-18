@@ -1,0 +1,15 @@
+{% load heroicons %}
+<form method="post"
+      action="{{ submit_url|default:request.path }}"
+      class="space-y-3">
+    {% csrf_token %}
+    {{ form }}
+    <div>
+        <button class="inline-flex items-center btn btn-primary"
+                type="submit"
+                value="true">
+            {% heroicon_mini "check" class="mr-2" %}
+            Save Room
+        </button>
+    </div>
+</form>

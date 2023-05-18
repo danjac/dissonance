@@ -20,5 +20,6 @@ from django.urls import include, path
 
 urlpatterns = [
     path("", include("dissonance.chatrooms.urls")),
+    path("accounts/", include("django.contrib.auth.urls")),
     path(settings.ADMIN_URL, admin.site.urls),
 ]

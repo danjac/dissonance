@@ -69,6 +69,22 @@ files = [
 Django = ">=3.2"
 
 [[package]]
+name = "heroicons"
+version = "2.2.0"
+description = "Use heroicons in your Django and Jinja templates."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "heroicons-2.2.0-py3-none-any.whl", hash = "sha256:c725fcdedd6666db49608a94f33fb7a9bbb6d194797cef492ddfa07592f7b391"},
+    {file = "heroicons-2.2.0.tar.gz", hash = "sha256:5325378056f8edef0c02b858873af10e74d528cab831a23d39875f5a9786df2e"},
+]
+
+[package.extras]
+django = ["django (>=2.2)"]
+jinja = ["jinja2 (>=2.8)"]
+
+[[package]]
 name = "psycopg"
 version = "3.1.9"
 description = "PostgreSQL database adapter for Python"
@@ -201,4 +217,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "17808584120a8fd59f7194dcfe25791ab731aaaa0e6eed40ecc5c32b89e204f1"
+content-hash = "01c06795d09390b7e61e8fc793ac15129cef0b56490050508b989050ff60df3c"

@@ -20,7 +20,7 @@
         <meta name="keywords" content="chat" />
         <meta name="description" content="chat" />
         <!-- PlayCDN, not for production use! -->
-        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     </head>
     <body class="mx-auto font-sans text-sm antialiased container-xl scroll-smooth lg:text-base"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
@@ -28,11 +28,13 @@
             <div class="grow">
                 {# include "_navbar.html" #}
                 {# include "_messages.html" #}
-                <main class="relative flex min-h-screen p-2 py-6 mx-auto xl:pt-12 xl:w-11/12">
-                    {# djlint:off #}
+                <div class="relative flex min-h-screen p-2 py-6 mx-auto xl:pt-12 xl:w-11/12">
+                    <main class="w-full mx-auto">
+                        {# djlint:off #}
                         {% block content %}{% endblock content %}
-                    {# djlint:on #}
-                </main>
+                        {# djlint:on #}
+                    </main>
+                </div>
             </div>
         </div>
         {% django_htmx_script %}
