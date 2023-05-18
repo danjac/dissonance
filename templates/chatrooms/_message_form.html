@@ -5,8 +5,12 @@
       hx-target="this"
       hx-swap="outerHTML">
     {% csrf_token %}
-    <input placeholder="Say something..." type="text" name="text" class="w-full" />
-    <button class="inline-flex items-center btn btn-primary ml-3"
+    <input placeholder="Say something..."
+           type="text"
+           name="text"
+           class="w-full"
+           required />
+    <button class="inline-flex items-center ml-3 btn btn-primary"
             type="submit"
             value="true">{% heroicon_mini "check" class="mr-2" %}</button>
 </form>

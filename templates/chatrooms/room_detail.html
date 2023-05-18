@@ -1,11 +1,11 @@
 {% extends "base.html" %}
+{% load heroicons %}
 {% block content %}
     <div class="flex items-center justify-between pb-3 mb-3 border-b">
         <h1 class="text-lg font-bold lg:text-xl xl:text-2xl">{{ room.name }}</h1>
         <a href="{% url "chatrooms:index" %}" class="hover:text-blue-800">All Rooms</a>
     </div>
-    <div hx-ext="sse"
-         sse-connect="{% url "chatrooms:messages_stream" room.pk %}">
+    <div hx-ext="sse" sse-connect="{% url "chatrooms:events" room.pk %}">
         <ul class="w-full mb-6 divide-y divide-solid"
             hx-get="{% url "chatrooms:latest_message" room.pk %}"
             hx-trigger="sse:new-message"
