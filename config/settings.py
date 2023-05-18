@@ -60,7 +60,7 @@ CONN_MAX_AGE = env.int("CONN_MAX_AGE", default=0)
 DATABASES = {
     "default": {
         **env.db(default="postgresql://postgres:password@127.0.0.1:5432/postgres"),
-        "ATOMIC_REQUESTS": False,
+        "ATOMIC_REQUESTS": True,
         "CONN_MAX_AGE": CONN_MAX_AGE,
         "CONN_HEALTH_CHECKS": CONN_MAX_AGE > 0,
     }

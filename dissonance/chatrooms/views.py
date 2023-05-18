@@ -3,7 +3,7 @@ from collections.abc import AsyncGenerator
 
 import psycopg
 from django.contrib.auth.decorators import login_required
-from django.db import connection
+from django.db import connection, transaction
 from django.http import Http404, HttpRequest, HttpResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
@@ -81,6 +81,7 @@ def latest_message(request: HttpRequest, room_id: int) -> HttpResponse:
     return HttpResponse(status=204)
 
 
+@transaction.non_atomic_requests
 async def messages_stream(
     request: HttpRequest,
     room_id: int,
