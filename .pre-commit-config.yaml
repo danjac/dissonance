@@ -60,13 +60,3 @@ repos:
           - id: poetry-export
             args: ["-o", "requirements.txt", "--without-hashes"]
             verbose: true
-          - id: poetry-export
-            args:
-                [
-                    "-o",
-                    "requirements-ci.txt",
-                    "--with",
-                    "dev",
-                    "--without-hashes",
-                ]
-            verbose: true
