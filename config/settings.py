@@ -33,6 +33,7 @@ INSTALLED_APPS: list[str] = [
     "django.contrib.staticfiles",
     "django.forms",
     "django_htmx",
+    "dissonance.chatrooms",
 ]
 
 
