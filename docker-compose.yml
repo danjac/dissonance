@@ -1,0 +1,32 @@
+version: "3.9"
+
+x-logging: &default-logging
+  options:
+    max-size: "10k"
+    max-file: "3"
+
+x-deploy: &default-deploy
+  restart_policy:
+    condition: on-failure
+    max_attempts: 3
+
+services:
+  postgres:
+    image: postgres:15.0-bullseye
+    environment:
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    stop_grace_period: "3s"
+    deploy: *default-deploy
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    ports:
+      - "5432:5432"
+
+volumes:
+  pg_data: {}
