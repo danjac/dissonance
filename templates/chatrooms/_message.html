@@ -1,4 +1,11 @@
-<li>
-    <span class="font-semibold">@{{ message.user.username }}</span>
+{% load heroicons %}
+<li class="py-3" hx-swap="delete" hx-target="this">
+    <span class="font-semibold{% if message.user == request.user %} text-violet-600{% endif %}">
+        @{{ message.user.username }}
+    </span>
     {{ message.text }}
+    {% if message.user == request.user %}
+        <button class="float-right text-red-500"
+                hx-delete="{% url "chatrooms:delete_message" message.pk %}">{% heroicon_mini "x-mark" %}</button>
+    {% endif %}
 </li>

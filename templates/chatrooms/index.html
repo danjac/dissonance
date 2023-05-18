@@ -1,9 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1 class="mb-3 pb-3 text-lg font-bold border-b sm:justify-start lg:text-xl xl:text-2xl">Rooms</h1>
-    <ul class="space-y-3 divide-y divide-solid mb-6">
+    <div class="flex items-center justify-between pb-3 mb-3 border-b">
+        <h1 class="text-lg font-bold lg:text-xl xl:text-2xl">Rooms</h1>
+        {% if request.user.is_authenticated %}
+            <div class="flex items-center space-x-3">
+                <a href="{% url "chatrooms:create_room" %}" class="hover:text-blue-800">Create Room</a>
+                <a href="{% url "logout" %}" class="hover:text-blue-800">Sign Out</a>
+            </div>
+        {% else %}
+            <a href="{% url "login" %}" class="hover:text-blue-800">Sign In</a>
+        {% endif %}
+    </div>
+    <ul class="mb-6 divide-y divide-solid">
         {% for room in rooms %}
-            <li>
+            <li class="py-3">
                 <a href="{{ room.get_absolute_url }}"
                    class="font-bold hover:text-blue-800">{{ room.name }}</a>
             </li>
@@ -11,7 +21,4 @@
             <li>No rooms have been added yet.</li>
         {% endfor %}
     </ul>
-    <h2 class="mb-3 pb-3 text-base font-bold border-b sm:justify-start lg:text-lg xl:text-xl">Add Room</h2>
-    {% url 'chatrooms:create_room' as submit_url %}
-    {% include "chatrooms/_room_form.html" with submit_text="Add Room" %}
 {% endblock content %}

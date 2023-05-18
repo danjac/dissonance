@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="flex items-center pb-3 mb-3 border-b justify-between">
+    <div class="flex items-center justify-between pb-3 mb-3 border-b">
         <h1 class="text-lg font-bold lg:text-xl xl:text-2xl">{{ room.name }}</h1>
         <a href="{% url "chatrooms:index" %}" class="hover:text-blue-800">All Rooms</a>
     </div>
     <div hx-ext="sse"
          sse-connect="{% url "chatrooms:messages_stream" room.pk %}">
-        <ul class="mb-6 w-full space-y-3 divide-y divide-solid"
+        <ul class="w-full mb-6 divide-y divide-solid"
             hx-get="{% url "chatrooms:latest_message" room.pk %}"
             hx-trigger="sse:new-message"
             hx-swap="beforeend">
@@ -15,5 +15,12 @@
             {% endfor %}
         </ul>
     </div>
-    {% include "chatrooms/_message_form.html" %}
+    {% if request.user.is_authenticated %}
+        {% include "chatrooms/_message_form.html" %}
+    {% else %}
+        <div>
+            <a href="{% url "login" %}?next={{ request.path }}"
+               class="hover:text-blue-800">Sign in to post messages</a>
+        </div>
+    {% endif %}
 {% endblock content %}

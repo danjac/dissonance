@@ -12,13 +12,11 @@ from dissonance.chatrooms.forms import RoomForm
 from dissonance.chatrooms.models import Message, Room
 
 
-@login_required
 def index(request: HttpRequest) -> HttpResponse:
     rooms = Room.objects.order_by("name")
     return render(request, "chatrooms/index.html", {"rooms": rooms, "form": RoomForm()})
 
 
-@login_required
 def room_detail(request: HttpRequest, room_id: int) -> HttpResponse:
     room = get_object_or_404(Room.objects.select_related("owner"), pk=room_id)
     messages = (
@@ -84,14 +82,19 @@ def latest_message(request: HttpRequest, room_id: int) -> HttpResponse:
     return HttpResponse(status=204)
 
 
+@login_required
+def delete_message(request: HttpRequest, message_id: int) -> HttpResponse:
+    message = get_object_or_404(Message, pk=message_id, user=request.user)
+    message.delete()
+    return HttpResponse() if request.htmx else redirect(message.room)
+
+
 @transaction.non_atomic_requests
 async def messages_stream(
     request: HttpRequest,
     room_id: int,
 ) -> StreamingHttpResponse:
-    room = await Room.objects.filter(pk=room_id).afirst()
-
-    if room:
+    if room := await Room.objects.filter(pk=room_id).afirst():
         return StreamingHttpResponse(
             streaming_content=_stream_messages(room),
             content_type="text/event-stream",

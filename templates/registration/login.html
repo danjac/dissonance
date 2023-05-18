@@ -4,18 +4,14 @@
     | Sign In
 {% endblock title %}
 {% block content %}
-    <h1 class="mb-3 pb-3 text-lg font-bold border-b sm:justify-start lg:text-xl xl:text-2xl">Sign In</h1>
+    <h1 class="pb-3 mb-3 text-lg font-bold border-b sm:justify-start lg:text-xl xl:text-2xl">Sign In</h1>
     <p class="mb-3">
         If you have not created an account yet, then please
         <a class="underline hover:text-blue-500" href="">sign up</a> first.
     </p>
     <form method="post" action="{{ request.path }}" class="space-y-3">
         {% csrf_token %}
-        {% if redirect_field_value %}
-            <input type="hidden"
-                   name="{{ redirect_field_name }}"
-                   value="{{ redirect_field_value }}" />
-        {% endif %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
         {{ form }}
         <div class="flex items-center">
             <a class="mr-3 link md:mr-6" title="Recover Your Password" href="">Forgot Password?</a>
