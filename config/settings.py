@@ -162,8 +162,8 @@ USE_TZ = True
 # Static files
 
 STATIC_URL = env.str("STATIC_URL", default="/static/")
-STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+# STATICFILES_DIRS = [BASE_DIR / "static"]
+# STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Templates
 # https://docs.djangoproject.com/en/1.11/ref/forms/renderers/
