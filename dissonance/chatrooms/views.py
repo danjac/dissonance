@@ -65,19 +65,20 @@ def post_message(request: HttpRequest, room_id: int) -> HttpResponse:
     return render(request, "chatrooms/_message_form.html", {"room": room})
 
 
-def messages(request: HttpRequest, room_id: int) -> HttpResponse:
+def latest_message(request: HttpRequest, room_id: int) -> HttpResponse:
     room = get_object_or_404(Room, pk=room_id)
-    messages = (
-        Message.objects.filter(room=room).select_related("user").order_by("created")
-    )
-    return render(
-        request,
-        "chatrooms/_messages.html",
-        {
-            "messages": messages,
-            "room": room,
-        },
-    )
+    if (
+        latest_message := Message.objects.filter(room=room)
+        .select_related("user")
+        .order_by("-created")
+        .first()
+    ):
+        return render(
+            request,
+            "chatrooms/_message.html",
+            {"message": latest_message},
+        )
+    return HttpResponse(status=204)
 
 
 async def messages_stream(

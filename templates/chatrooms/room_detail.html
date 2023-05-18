@@ -4,9 +4,14 @@
     <div hx-ext="sse"
          sse-connect="{% url "chatrooms:messages_stream" room.pk %}">
         <ul class="mb-6 w-full space-y-3 divide-y divide-solid"
-            hx-get="{% url "chatrooms:messages" room.pk %}"
-            hx-trigger="sse:new-message">
-            {% include "chatrooms/_messages.html" %}
+            hx-get="{% url "chatrooms:latest_message" room.pk %}"
+            hx-trigger="sse:new-message"
+            hx-swap="beforeend">
+            {% for message in messages %}
+                {% include "chatrooms/_message.html" %}
+            {% empty %}
+                <li>Be the first to say something!</li>
+            {% endfor %}
         </ul>
     </div>
     {% include "chatrooms/_message_form.html" %}
