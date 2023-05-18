@@ -17,3 +17,10 @@ django-environ = "^0.10.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pyright]
+reportOptionalMemberAccess = false
+reportGeneralTypeIssues = false
+reportMissingTypeStubs = false
+
+
