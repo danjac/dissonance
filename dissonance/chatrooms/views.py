@@ -57,13 +57,13 @@ def post_message(request: HttpRequest, room_id: int) -> HttpResponse:
 
     if text := request.POST.get("text"):
         message = Message.objects.create(room=room, user=request.user, text=text)
-        payload = json.dumps(
-            {
-                "event": "new-message",
-                "data": str(message.pk),
-            },
-        )
         with connection.cursor() as cursor:
+            payload = json.dumps(
+                {
+                    "event": "new-message",
+                    "data": str(message.pk),
+                },
+            )
             cursor.execute(f"NOTIFY {room.get_channel_id()}, '{payload}'")
     return render(request, "chatrooms/_message_form.html", {"room": room})
 
