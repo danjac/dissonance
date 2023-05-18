@@ -1,0 +1,8 @@
+{% for message in messages %}
+    <li>
+        <span class="font-semibold">@{{ message.user.username }}</span>
+        {{ message.text }}
+    </li>
+{% empty %}
+    <li>Be the first to say something!</li>
+{% endfor %}
