@@ -2,16 +2,28 @@
 {% load heroicons %}
 {% block content %}
     <h1 class="pb-3 mb-3 text-lg font-bold border-b sm:justify-start lg:text-xl xl:text-2xl">{{ room.name }}</h1>
-    <ul class="mb-6 space-y-3 divide-y divide-solid">
+    <ul class="mb-6 w-full space-y-3 divide-y divide-solid"
+        hx-sse="connect: {% url "chatrooms:messages_stream" room.pk %}"
+        hx-trigger="sse: new-message"
+        hx-swap="innerHTML">
         {% for message in messages %}
-            <li class="prose">{{ message.text }}</li>
+            {% include "chatrooms/_message.html" %}
         {% empty %}
             <li>Be the first to say something!</li>
         {% endfor %}
     </ul>
-    <form method="post" action="" class="flex items-center space-x-3">
-        <input placeholder="Say something..." type="text" name="text" class="w-full" />
-        <button class="inline-flex items-center btn btn-primary"
+    <form method="post"
+          class="flex items-center"
+          hx-post="{% url "chatrooms:post_message" room.pk %}"
+          hx-swap="none"
+          @submit="text=''">
+        {% csrf_token %}
+        <input placeholder="Say something..."
+               type="text"
+               name="text"
+               class="w-full"
+               x-model="text" />
+        <button class="inline-flex items-center btn btn-primary ml-3"
                 type="submit"
                 value="true">{% heroicon_mini "check" class="mr-2" %}</button>
     </form>
