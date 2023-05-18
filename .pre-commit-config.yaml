@@ -1,0 +1,72 @@
+repos:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.4.0
+      hooks:
+          - id: check-builtin-literals
+          - id: check-json
+          - id: check-merge-conflict
+          - id: check-shebang-scripts-are-executable
+          - id: check-toml
+          - id: check-yaml
+          - id: debug-statements
+          - id: destroyed-symlinks
+          - id: detect-private-key
+          - id: file-contents-sorter
+            args: ["--ignore-case", "--unique"]
+            exclude: .gitignore|.dockerignore|requirements[-\w]*.txt
+    - repo: https://github.com/koalaman/shellcheck-precommit
+      rev: v0.9.0
+      hooks:
+          - id: shellcheck
+    - repo: https://github.com/charliermarsh/ruff-pre-commit
+      rev: "v0.0.267"
+      hooks:
+          - id: ruff
+            args: ["--fix"]
+    - repo: https://github.com/ambv/black
+      rev: 23.3.0
+      hooks:
+          - id: black
+            args: [--target-version, "py311", --line-length, "88"]
+            language_version: python3.11
+    - repo: https://github.com/MarcoGorelli/absolufy-imports
+      rev: v0.3.1
+      hooks:
+          - id: absolufy-imports
+    - repo: https://github.com/Riverside-Healthcare/djLint
+      rev: v1.27.2
+      hooks:
+          - id: djlint-django
+            args: ["--lint", "--reformat"]
+    - repo: https://github.com/hadolint/hadolint
+      rev: v2.12.1-beta
+      hooks:
+          - id: hadolint-docker
+    - repo: https://github.com/asottile/pyupgrade
+      rev: v3.4.0
+      hooks:
+          - id: pyupgrade
+            args: [--py311-plus]
+    - repo: https://github.com/adamchainz/django-upgrade
+      rev: "1.13.0"
+      hooks:
+          - id: django-upgrade
+            args: [--target-version, "4.2"]
+    - repo: https://github.com/python-poetry/poetry
+      rev: "1.4.0"
+      hooks:
+          - id: poetry-check
+          - id: poetry-lock
+          - id: poetry-export
+            args: ["-o", "requirements.txt", "--without-hashes"]
+            verbose: true
+          - id: poetry-export
+            args:
+                [
+                    "-o",
+                    "requirements-ci.txt",
+                    "--with",
+                    "dev",
+                    "--without-hashes",
+                ]
+            verbose: true

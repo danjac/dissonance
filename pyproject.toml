@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "dissonance"
+version = "0.1.0"
+description = "Simple chat demo app"
+authors = ["Dan Jacob <danjac2018@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Django = "^4.2.1"
+psycopg-binary = {extras = ["binary"], version = "^3.1.9"}
+django-htmx = "^1.14.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
