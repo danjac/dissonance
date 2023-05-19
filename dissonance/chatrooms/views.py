@@ -109,7 +109,6 @@ async def events(
     async def _event_stream() -> AsyncGenerator[str]:
         async with conn.cursor() as cursor:
             await cursor.execute(f"LISTEN {room.get_channel_id()}")
-            # we need the underlying psycopg connection
             async for event in conn.notifies():
                 payload = json.loads(event.payload)
                 yield f"event: {payload['event']}\ndata: {payload['data']}\n\n"
