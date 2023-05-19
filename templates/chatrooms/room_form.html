@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load heroicons %}
 {% block content %}
     <h1 class="mb-3 pb-3 text-lg font-bold border-b sm:justify-start lg:text-xl xl:text-2xl">
         {% if room %}
@@ -7,5 +8,16 @@
             Create Room
         {% endif %}
     </h1>
-    {% include "chatrooms/_room_form.html" %}
+    <form method="post" action="{{ request.path }}" class="space-y-3">
+        {% csrf_token %}
+        {{ form }}
+        <div>
+            <button class="inline-flex items-center btn btn-primary"
+                    type="submit"
+                    value="true">
+                {% heroicon_mini "check" class="mr-2" %}
+                Save Room
+            </button>
+        </div>
+    </form>
 {% endblock content %}
