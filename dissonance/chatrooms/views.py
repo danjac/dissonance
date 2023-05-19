@@ -91,16 +91,16 @@ def events(
     room_id: int,
 ) -> StreamingHttpResponse:
     room = get_object_or_404(Room, pk=room_id)
+
+    def _event_stream() -> Iterator[str]:
+        with connection.cursor() as cursor:
+            cursor.execute(f"LISTEN {room.get_channel_id()}")
+            # we need the underlying psycopg connection
+            for event in connection.connection.notifies():
+                payload = json.loads(event.payload)
+                yield f"event: {payload['event']}\ndata: {payload['data']}\n\n"
+
     return StreamingHttpResponse(
-        streaming_content=_event_stream(room),
+        streaming_content=_event_stream(),
         content_type="text/event-stream",
     )
-
-
-def _event_stream(room: Room) -> Iterator[str]:
-    with connection.cursor() as cursor:
-        cursor.execute(f"LISTEN {room.get_channel_id()}")
-        # we need the underlying psycopg connection
-        for event in connection.connection.notifies():
-            payload = json.loads(event.payload)
-            yield f"event: {payload['event']}\ndata: {payload['data']}\n\n"
