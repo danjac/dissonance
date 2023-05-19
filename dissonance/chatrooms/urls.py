@@ -12,5 +12,9 @@ urlpatterns = [
     path("rooms/<int:room_id>/latest", views.latest_message, name="latest_message"),
     path("rooms/<int:room_id>/post/", views.post_message, name="post_message"),
     path("rooms/<int:room_id>/events/", views.events, name="events"),
-    path("messages/<int:message_id>/", views.delete_message, name="delete_message"),
+    path(
+        "messages/<int:message_id>/delete/",
+        views.delete_message,
+        name="delete_message",
+    ),
 ]
