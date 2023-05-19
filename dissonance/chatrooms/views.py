@@ -70,8 +70,7 @@ def post_message(request: HttpRequest, room_id: int) -> HttpResponse:
     room = get_object_or_404(Room, pk=room_id)
 
     if text := request.POST.get("text"):
-        message = Message.objects.create(room=room, user=request.user, text=text)
-        _dispatch_event(room, "new-message", str(message.pk))
+        Message.objects.create(room=room, user=request.user, text=text)
     return render(request, "chatrooms/_message_form.html", {"room": room})
 
 
@@ -83,7 +82,6 @@ def delete_message(request: HttpRequest, message_id: int) -> HttpResponse:
             .first()
         ):
             message.delete()
-            _dispatch_event(message.room, f"delete-message-{message_id}")
 
     return HttpResponse()
 
@@ -106,14 +104,3 @@ def _event_stream(room: Room) -> Iterator[str]:
         for event in connection.connection.notifies():
             payload = json.loads(event.payload)
             yield f"event: {payload['event']}\ndata: {payload['data']}\n\n"
-
-
-def _dispatch_event(room: Room, event: str, data: str = "none") -> None:
-    with connection.cursor() as cursor:
-        payload = json.dumps(
-            {
-                "event": event,
-                "data": data,
-            },
-        )
-        cursor.execute(f"NOTIFY {room.get_channel_id()}, '{payload}'")
