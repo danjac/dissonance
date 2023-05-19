@@ -1,13 +1,8 @@
 {% load heroicons %}
 <li class="py-3"
-    {% if message.user == request.user %}
     hx-target="this"
     hx-swap="delete"
-    {% else %}
-    hx-delete="{% url "chatrooms:ping" %}"
-    hx-trigger="sse:delete-message-{{ message.pk }}"
-    hx-swap="outerHTML"
-    {% endif %}>
+    {% if message.user != request.user %} hx-delete="{% url "chatrooms:ping" %}" hx-trigger="sse:delete-message-{{ message.pk }}" {% endif %}>
     <span class="font-semibold{% if message.user == request.user %} text-violet-600{% endif %}">
         @{{ message.user.username }}
     </span>
