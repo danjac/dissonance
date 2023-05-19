@@ -1,14 +1,18 @@
 {% load heroicons %}
-<li class="py-3"
-    hx-target="this"
-    hx-swap="delete"
-    {% if message.user != request.user %} hx-delete="{% url "chatrooms:ping" %}" hx-trigger="sse:delete-message-{{ message.pk }}" {% endif %}>
-    <span class="font-semibold{% if message.user == request.user %} text-violet-600{% endif %}">
-        @{{ message.user.username }}
-    </span>
-    {{ message.text }}
-    {% if message.user == request.user %}
-        <button class="float-right text-red-500"
-                hx-delete="{% url "chatrooms:delete_message" message.pk %}">{% heroicon_mini "x-mark" %}</button>
-    {% endif %}
-</li>
+{% url "chatrooms:delete_message" message.pk as delete_url %}
+{% if message.user == request.user %}
+    <li class="py-3" hx-target="this" hx-swap="delete">
+        <span class="font-semibold text-violet-600">@{{ message.user.username }}</span>
+        {{ message.text }}
+        <button class="float-right text-red-500" hx-delete="{{ delete_url }}">{% heroicon_mini "x-mark" %}</button>
+    </li>
+{% else %}
+    <li class="py-3"
+        hx-target="this"
+        hx-swap="delete"
+        hx-delete="{{ delete_url }}"
+        hx-trigger="sse:delete-message-{{ message.pk }}">
+        <span class="font-semibold">@{{ message.user.username }}</span>
+        {{ message.text }}
+    </li>
+{% endif %}

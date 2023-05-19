@@ -1,10 +1,9 @@
 import json
-from collections.abc import AsyncGenerator
+from collections.abc import Iterator
 
-import psycopg
 from django.contrib.auth.decorators import login_required
-from django.db import connection, transaction
-from django.http import Http404, HttpRequest, HttpResponse, StreamingHttpResponse
+from django.db import connection
+from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
@@ -15,11 +14,6 @@ from dissonance.chatrooms.models import Message, Room
 def index(request: HttpRequest) -> HttpResponse:
     rooms = Room.objects.order_by("name")
     return render(request, "chatrooms/index.html", {"rooms": rooms, "form": RoomForm()})
-
-
-def ping(request: HttpRequest) -> HttpResponse:
-    """Returns empty response"""
-    return HttpResponse()
 
 
 def room_detail(request: HttpRequest, room_id: int) -> HttpResponse:
@@ -81,40 +75,35 @@ def post_message(request: HttpRequest, room_id: int) -> HttpResponse:
     return render(request, "chatrooms/_message_form.html", {"room": room})
 
 
-@login_required
 def delete_message(request: HttpRequest, message_id: int) -> HttpResponse:
-    message = get_object_or_404(
-        Message.objects.select_related("room"), pk=message_id, user=request.user
-    )
-    message.delete()
-
-    _dispatch_event(message.room, f"delete-message-{message_id}")
+    if request.user.is_authenticated:
+        if (
+            message := Message.objects.select_related("room")
+            .filter(pk=message_id, user=request.user)
+            .first()
+        ):
+            message.delete()
+            _dispatch_event(message.room, f"delete-message-{message_id}")
 
     return HttpResponse()
 
 
-@transaction.non_atomic_requests
-async def events(
+def events(
     request: HttpRequest,
     room_id: int,
 ) -> StreamingHttpResponse:
-    if room := await Room.objects.filter(pk=room_id).afirst():
-        return StreamingHttpResponse(
-            streaming_content=_event_stream(room),
-            content_type="text/event-stream",
-        )
-    raise Http404("Room not found")
+    room = get_object_or_404(Room, pk=room_id)
+    return StreamingHttpResponse(
+        streaming_content=_event_stream(room),
+        content_type="text/event-stream",
+    )
 
 
-async def _event_stream(room: Room) -> AsyncGenerator[str, None]:
-    connection_params = connection.get_connection_params()
-    connection_params.pop("cursor_factory")
-
-    conn = await psycopg.AsyncConnection.connect(**connection_params, autocommit=True)
-
-    async with conn.cursor() as cursor:
-        await cursor.execute(f"LISTEN {room.get_channel_id()}")
-        async for event in conn.notifies():
+def _event_stream(room: Room) -> Iterator[str]:
+    with connection.cursor() as cursor:
+        cursor.execute(f"LISTEN {room.get_channel_id()}")
+        # we need the underlying psycopg connection
+        for event in connection.connection.notifies():
             payload = json.loads(event.payload)
             yield f"event: {payload['event']}\ndata: {payload['data']}\n\n"
 
