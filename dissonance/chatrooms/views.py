@@ -1,9 +1,10 @@
 import json
-from collections.abc import Iterator
+from collections.abc import AsyncGenerator
 
+import psycopg
 from django.contrib.auth.decorators import login_required
-from django.db import connection
-from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
+from django.db import connection, transaction
+from django.http import Http404, HttpRequest, HttpResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
@@ -86,17 +87,30 @@ def delete_message(request: HttpRequest, message_id: int) -> HttpResponse:
     return HttpResponse()
 
 
-def events(
+@transaction.non_atomic_requests
+async def events(
     request: HttpRequest,
     room_id: int,
 ) -> StreamingHttpResponse:
-    room = get_object_or_404(Room, pk=room_id)
+    room = await Room.objects.filter(pk=room_id).afirst()
 
-    def _event_stream() -> Iterator[str]:
-        with connection.cursor() as cursor:
-            cursor.execute(f"LISTEN {room.get_channel_id()}")
+    if not room:
+        raise Http404("no room found")
+
+    connection_params = connection.get_connection_params()
+    # Django 4.2.1 workaround
+    connection_params.pop("cursor_factory")
+
+    conn = await psycopg.AsyncConnection.connect(
+        **connection_params,
+        autocommit=True,
+    )
+
+    async def _event_stream() -> AsyncGenerator[str]:
+        async with conn.cursor() as cursor:
+            await cursor.execute(f"LISTEN {room.get_channel_id()}")
             # we need the underlying psycopg connection
-            for event in connection.connection.notifies():
+            async for event in conn.notifies():
                 payload = json.loads(event.payload)
                 yield f"event: {payload['event']}\ndata: {payload['data']}\n\n"
 
