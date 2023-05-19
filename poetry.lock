@@ -299,21 +299,6 @@ docs = ["furo (>=2021.8.17b43,<2021.9.0)", "sphinx (>=3.5.0)", "sphinx-notfound-
 testing = ["coverage[toml] (>=5.0a4)", "pytest (>=4.6.11)"]
 
 [[package]]
-name = "django-htmx"
-version = "1.14.0"
-description = "Extensions for using Django with htmx."
-category = "main"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "django_htmx-1.14.0-py3-none-any.whl", hash = "sha256:393e2a4a963aff691b3973c898dbca1363139d7c7bf2e8cc4c605e2ad808a779"},
-    {file = "django_htmx-1.14.0.tar.gz", hash = "sha256:b689a8d6f7052a96a373411ec55ba81c1ddffb4d66b1f5ab4d6e3d28420842fd"},
-]
-
-[package.dependencies]
-Django = ">=3.2"
-
-[[package]]
 name = "h11"
 version = "0.14.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -781,4 +766,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "ba23e47978d6bc2d90822256548d8350bb076ab728c6616dc393f4b72369d9ba"
+content-hash = "44dbb4b61db4392c6f1af9ed334b0de5847995de04c1d8faf550a90f00343dce"

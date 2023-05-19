@@ -90,7 +90,7 @@ def delete_message(request: HttpRequest, message_id: int) -> HttpResponse:
 
     _dispatch_event(message.room, f"delete-message-{message_id}")
 
-    return HttpResponse() if request.htmx else redirect(message.room)
+    return HttpResponse()
 
 
 @transaction.non_atomic_requests

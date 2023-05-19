@@ -33,7 +33,6 @@ INSTALLED_APPS: list[str] = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.forms",
-    "django_htmx",
     "heroicons",
     "dissonance.chatrooms",
 ]
@@ -50,7 +49,6 @@ MIDDLEWARE: list[str] = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
-    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 # Databases
