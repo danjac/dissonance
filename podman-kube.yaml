@@ -1,0 +1,37 @@
+# Created with podman-4.6.2
+# Intended for local development use
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: dissonance-pod
+  name: dissonance-pod
+spec:
+  containers:
+    - name: mailhog
+      image: docker.io/mailhog/mailhog:latest
+      ports:
+        - containerPort: 1025
+          hostPort: 1025
+        - containerPort: 8025
+          hostPort: 8025
+    - name: redis
+      image: docker.io/library/redis:7.0.5-bullseye
+      ports:
+        - containerPort: 6379
+          hostPort: 6379
+    - name: postgres
+      env:
+        - name: POSTGRES_PASSWORD
+          value: password
+      image: docker.io/library/postgres:15.0-bullseye
+      ports:
+        - containerPort: 5432
+          hostPort: 5432
+      volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: pg_data-pvc
+  volumes:
+    - name: pg_data-pvc
+      persistentVolumeClaim:
+        claimName: dissonance_pg_data

@@ -97,6 +97,10 @@ async def events(
     if not room:
         raise Http404("no room found")
 
+    return await _make_event_stream(room.get_channel_id())
+
+
+async def _make_event_stream(listen_to: str) -> StreamingHttpResponse:
     connection_params = connection.get_connection_params()
     # Django 4.2.1 workaround
     connection_params.pop("cursor_factory")
@@ -106,9 +110,9 @@ async def events(
         autocommit=True,
     )
 
-    async def _event_stream() -> AsyncGenerator[str]:
+    async def _event_stream() -> AsyncGenerator[str, None]:
         async with conn.cursor() as cursor:
-            await cursor.execute(f"LISTEN {room.get_channel_id()}")
+            await cursor.execute(f"LISTEN {listen_to}")
             async for event in conn.notifies():
                 payload = json.loads(event.payload)
                 yield f"event: {payload['event']}\ndata: {payload['data']}\n\n"
