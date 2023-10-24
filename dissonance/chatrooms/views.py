@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST
 
 from dissonance.chatrooms.forms import RoomForm
 from dissonance.chatrooms.models import Message, Room
+from dissonance.events import event_stream
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -97,27 +98,4 @@ async def events(
     if not room:
         raise Http404("no room found")
 
-    return await _make_event_stream(room.get_channel_id())
-
-
-async def _make_event_stream(listen_to: str) -> StreamingHttpResponse:
-    connection_params = connection.get_connection_params()
-    # Django 4.2.1 workaround
-    connection_params.pop("cursor_factory")
-
-    conn = await psycopg.AsyncConnection.connect(
-        **connection_params,
-        autocommit=True,
-    )
-
-    async def _event_stream() -> AsyncGenerator[str, None]:
-        async with conn.cursor() as cursor:
-            await cursor.execute(f"LISTEN {listen_to}")
-            async for event in conn.notifies():
-                payload = json.loads(event.payload)
-                yield f"event: {payload['event']}\ndata: {payload['data']}\n\n"
-
-    return StreamingHttpResponse(
-        streaming_content=_event_stream(),
-        content_type="text/event-stream",
-    )
+    return await event_stream(room.get_channel_id())
